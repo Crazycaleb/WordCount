@@ -62,24 +62,26 @@ public class WordCountScript : MonoBehaviour
     {
         Clear.AddInteractionPunch();
         Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.BigButtonPress, Clear.transform);
-        if (!_moduleSolved)
-        {
-            input = "";
-            SubmitDisplay.text = "";
-            Display.text = DisplayNumber.ToString();
-        }
+        if (_moduleSolved)
+            return;
+        input = "";
+        SubmitDisplay.text = "";
+        Display.text = DisplayNumber.ToString();
     }
 
     void submitPress(KMSelectable Submit)
     {
         Submit.AddInteractionPunch();
+        if (_moduleSolved)
+            return;
         if (input == answer)
         {
-            Module.HandlePass();
             Audio.PlaySoundAtTransform("solveSound", transform);
             SubmitDisplay.text = "";
             Display.text = "GG!";
             Debug.LogFormat("[Word Count #{0}] {1} was correct!", _moduleId, answer);
+            _moduleSolved = true;
+            Module.HandlePass();
         }
         else
         {
@@ -95,6 +97,8 @@ public class WordCountScript : MonoBehaviour
     {
         key.AddInteractionPunch();
         Audio.PlaySoundAtTransform("keyboardsound", key.transform);
+        if (_moduleSolved)
+            return;
         for (int t = 0; t < 27; t++)
         {
             if (Keyage[t] == key)
@@ -133,7 +137,7 @@ public class WordCountScript : MonoBehaviour
         string writingText = new string((from c in allWritings[writingPosition].text
                                          where char.IsWhiteSpace(c) || char.IsLetterOrDigit(c)
                                          select c).ToArray());
-        string[] writingWords = writingText.Split( new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] writingWords = writingText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         return writingWords;
     }
